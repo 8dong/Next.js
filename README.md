@@ -112,7 +112,9 @@ export default Default;
 
 예를 들어, "/app/dashboard/(..)i/page.tsx"의 경우 "app/i/page.tsx"를 interceipting함, "app/dashboard/(..)(..)i"의 경우 "app/i"를 interceipting.
 
-> Parallel Routes 내부에서도 Intercepting Routes 사용 가능. 주의할 점으로 intercepting 될 때 무시되는 경로들은 동일하게 무시되어 Interceipting 수행. 예를 들어, "/app/dashboard/@modal/(.)i/"의 경우 "/app/dashboard/i"를 intercepting. (.) 자체는 현재 디렉토리를 의미하지만 @modal 자체가 url에 영향을 주지 않으므로 intercepting되는 route 또한 @modal을 무시한 dashboard를 가리킴. 이는 페러렐 라우트뿐만 아니라 url에 영향을 주지 않는 모든 경로에 해당.
+> Parallel Routes 내부에서도 Intercepting Routes 사용 가능. 주의할 점으로 intercepting 될 때 무시되는 경로들은 동일하게 무시되어 Interceipting 수행. 예를 들어, "/app/dashboard/@modal/(.)i/"의 경우 "/app/dashboard/i"를 intercepting. (.) 자체는 현재 디렉토리를 의미하지만 @modal 자체가 url에 영향을 주지 않으므로 intercepting되는 route 또한 @modal을 무시한 dashboard를 가리킴.
+
+> 만약 페러렐 라우트 내 인터셉팅 라우트를 사용하는 경우 인터셉팅된 url 경로로 변경 되지만, 실제로 해당 경로의 Page 컴포넌트는 렌더링되지 않으며 기존 페러렐 라우트처럼 직전 페이지에 병렬로 표시됨.
 
 > Intercepting Routes는 클라이언트 사이드에서 라우팅될 때만 Intecepting되며, 클라이언트상에서 라우팅되지 않은 경우 기존 페이지가 렌더링. 예를 들어, "app/dashboard/@modal/(.)i"가 intercepting되지 않는다면 "app/dashboard/i"가 라우팅.
 

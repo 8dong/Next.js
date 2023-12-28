@@ -7,7 +7,7 @@ v13에서는 app 디렉토리 구조에 따라 라우팅. app 디렉토리에서
 기본적으로 app 디렉토리 내 모든 컴포넌트들은 RSC(React Server Component)로 동작. 만약 RCC로 설정하기 위해서는 파일 최상단에 "use client";를 작성해야함.
 
 ```javascript
-// app/page.tsx
+// "app/page.tsx"
 
 'use client'; // RCC 컴포넌트 선언
 
@@ -41,7 +41,7 @@ const Page: NextPage = () => {
 예를 들어, "/app/@modal/dashboard/page.tsx"가 export default한 컴포넌트는 "/app/dahboard/layout.tsx"가 export default한 컴포넌트에 modal prop으로 전달.
 
 ```javascript
-// app/dashbaord/layout.tsx
+// "app/dashbaord/layout.tsx"
 
 import { NextPage } from 'next';
 import { ReactNode } from 'react';
@@ -70,7 +70,7 @@ export default Layout;
 예를 들어, "app/@modal/dashboard/[id]/page.tsx"가 export default한 컴포넌트는 "/app/dahsboard/[id]/layout.tsx"가 export default한 컴포넌트에 modal prop으로 전달.
 
 ```javascript
-// app/dashbaord/[id]/layout.tsx
+// "app/dashbaord/[id]/layout.tsx"
 
 import { NextPage } from 'next';
 import { ReactNode } from 'react';
@@ -95,7 +95,7 @@ export default Layout;
 이때 주의할 점으로 상위 페러렐 라우트를 사용하지 않는 경우에는 빈 콘텐츠를 갖는 page.tsx대신 default.tsx 라는 컨벤션을 갖는 파일을 추가해주어야 함. "app/@modal/dashboard/[id]/page.tsx"경로의 경우 "/dashboard"에서 페러렐 라우트를 사용하지 않는 경우 "app/@modal/dashboard/default.tsx"라는 파일을 추가해주어야 함.
 
 ```javascript
-// app/@modal/dashboard/default.tsx
+// "app/@modal/dashboard/default.tsx"
 
 import { NextPage } from 'next';
 
@@ -119,3 +119,104 @@ export default Default;
 #### Private Routes
 
 디렉토리명을 "_forder"로 작성한 경우 여러 페이지에서 공통적으로 사용하는 컴포넌트들을 작성. private route의 경우 실제 라우팅되지 않으며, 단지 공통적으로 사용되는 컴포넌트들을 위해 사용. private route에 존재하는 컴포넌트들을 import하여 사용.
+
+### File Conventions
+
+#### layout.tsx
+
+layout.tsx가 export default한 Layout 컴포넌트는 props로 page.tsx가 export default한 컴포넌트를 children prop으로 전달받음. 추가적으로 params prop도 전달받으며 이는 동적 라우팅에 대한 경로값을 객체 형태로 전달 받음.
+
+layout.tsx는 app 디렉토리 내 각 하위 디렉토리 마다 하나씩 설정 가능. 만약 하위 디렉토리에 layout.tsx가 존재하는 경우 상위 layout.tsx가 하위 layout.tsx를 포함하는 형식으로 적용(nested layout).
+
+예를 들어,"app/dashboard/dashboard/settings/layout.tsx"나 "app/dashboard/dashboard/analytics/layout.tsx"의 경우 "app/dashboard/layout.tsx"를 포함.
+
+client side navigation을 사용하는 경우 layout 컴포넌트는 리렌더링 되지 않음. 만약 리렌더링이 필요한 Layout 컴포넌트가 필요한 경우 layout.tsx 대신 template.tsx 사용.
+
+"app/layout.tsx"는 루트 레이아웃으로 동작하며 필수로 추가해주여야 함. "app/layout.tsx"의 Layout 컴포넌트는 `<html>` and `<body>` 태그 반드시 정의해주어 함.
+
+```javascript
+// app/layout.tsx
+
+import { ReactNode } from 'react';
+
+interface IProps {
+  children: ReactNode; // "app/page.tsx"에서 export default한 컴포넌트
+  params?: { [key: string]: string } // 동적 라우팅에 대한 경로 정보
+}
+
+const RootLayout: FC<IProps> = ({ children, params }) => {
+  return (
+    <html lang='ko'>
+      <body>{children}</body>
+    </html>
+  );
+}
+
+export default RootLayout;
+```
+
+#### tempalte.tsx
+
+tempalte.tsx는 layout.tsx와 동일한 역할을 하기 때문에 동일한 폴더 내 layout.tsx가 존재한다면 template.tsx를 사용할 수 없음(공존 불가능).
+
+layout.tsx와의 차이점으로는 layout.tsx를 상위로서 공유하는 하위 경로로 라우팅하더라도 공유하는 Layout 컴포넌트는 리렌더링되지 않지만, template 컴포넌트를 사용하게 된다면 하위 경로로 변경될 때마다 template 컴포넌트가 새롭게 마운트된다는 점을 갖고 있음.
+
+#### page.tsx
+
+page.tsx는 페이지 콘텐츠를 나타내기 위한 Page 컴포넌트로 디렉토리마다 필수적으로 존재해야 하는 파일. 디렉토리 내 layout.tsx가 존재하는 경우 layout.tsx(or template.tsx)의 children prop으로 전달되는 컴포넌트.
+
+페이지 컴포넌트는 props로 searchParams을 전달받음. searchParams는 쿼리 스트링 값을 객체 형태로 전달 받음. 추가적으로 params prop도 전달받으며 동적 라우팅하는 경우 경로에 대한 정보를 객체 형태로 전달받음.
+
+```javaScript
+// "app/page.tsx"
+
+import { NextPage } from 'next';
+
+interface IProps {
+  searchParams?: { [key: string]: string } // 쿼리 스트링에 대한 정보
+  params?: { [key: string]: string } // 동적 라우티에 대한 경로 정보
+}
+
+const Page: NextPage<IProps> = ({ searchParams, params }) => {
+  return <main>Page Content,,,</main>;
+}
+
+export default Page;
+```
+
+#### default.tsx
+
+디렉토리 내 page.tsx는 필수적으로 작성해주어야 하지만 만약 경로에 페이지 콘텐츠가 없는 경우 빈 콘텐츠를 나타내는 page.tsx 대신 default.tsx 추가 가능.
+
+예를 들어, 페러렐 라우트에서 사용되지 않는 상위 경로의 경우 page.tsx의 콘텐츠가 존재하지 않기 때문에 page.tsx 대신 default.tsx를 작성. 이는 빈 콘텐츠를 갖는 page.tsx를 불필요하게 생성하지 않기 위해서 사용.
+
+```javascript
+import { NextPage } from 'next';
+
+const Default: NextPage = () => {
+  return null;
+};
+
+export default Default;
+```
+
+#### not-found.tsx
+
+not-found라는 파일명으로 app 디렉토리 하위에 생성시 해당 컴포넌트는 일치하는 경로가 없는 경우 라우팅됨. 즉, 404 에러 페이지를 의미.
+
+```javascript
+// "app/not-found.tsx"
+
+import { NextPage } from 'next';
+
+const NotFound: NextPage = () => {
+  return (
+    <main>
+      <h1>해당 페이지가 존재하지 않습니다.</h1>
+      <button>돌아가기</button>
+    </main>
+  );
+};
+
+export default NotFound;
+```

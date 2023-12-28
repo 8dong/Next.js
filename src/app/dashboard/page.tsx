@@ -10,7 +10,7 @@ interface IProps {
 const Page: NextPage<IProps> = ({ searchParams, params }) => {
   return (
     <main>
-      <Content searchParams={searchParams} params={params} navigationList={['/dashboard']} />
+      <Content searchParams={searchParams} params={params} navigationList={['/dashboard/modal']} />
     </main>
   );
 };

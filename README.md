@@ -137,7 +137,7 @@ client side navigation을 사용하는 경우 layout 컴포넌트는 리렌더�
 "app/layout.tsx"는 루트 레이아웃으로 동작하며 필수로 추가해주여야 함. "app/layout.tsx"의 Layout 컴포넌트는 `<html>` and `<body>` 태그 반드시 정의해주어 함.
 
 ```javascript
-// app/layout.tsx
+// "app/layout.tsx"
 
 import { ReactNode } from 'react';
 
@@ -221,4 +221,154 @@ const NotFound: NextPage = () => {
 };
 
 export default NotFound;
+```
+
+## Functions
+
+### useRouter
+
+url을 변경하기 위해서는 next/navigation이 제공하는 useRouter 훅 사용. useRouter 훅이 호출시 반환하는 객체에 push, replace, refresh, prefetch, back, forward 메서드 존재 (client side navigation).
+
+```javascript
+"use client";
+
+import { NextPage } from 'next';
+import { useRouter } from 'next/navigation';
+
+const Page: NextPage = () => {
+  const router = useRouter();
+
+  // 1. router.push(href: string, { scroll: boolean })
+  //    첫 번째 인수로 이동할 url 경로 전달.
+  //    두 번째 인수로 옵션에 대한 객체를 전달. scroll 프로퍼티의 경우 이전 페이지에 대한 스크롤 위치 기억 여부에 대한 불리언 값 작성 (history stack에 push).
+
+  // 2. router.replace(href: string, { scroll: boolean })
+  //    첫 번째 인수로 이동한 url 경로 전달.
+  //    두 번째 인수로 옵션에 대한 객체를 전달. scroll 프로퍼티의 경우 이전 페이지에 대한 스크롤 위치 기억 여부에 대한 불리언 값 작성 (현재 history stack replace).
+
+  // 3. router.refresh()
+  //    현재 url 경로로 refresh. refresh의 경우 data re-fetching, server component re-rendering 등을 수행.
+
+  // 4. router.prefretch(href: string)
+  //    첫 번째 인수로 작성한 경로에 대한 페이지를 pre-fetching. 이는 클라이언트 사이드에서 빠른 페이지 전환 제공.
+
+  // 5. router.back()
+  //    history stack에서 이전 stack에 대한 경로로 이동.
+
+  // 6. router.forward()
+  //    history stack에서 앞 stack에 대한 경로로 이동.
+
+  return null;
+}
+
+export default Page;
+```
+
+### usePathname
+
+usePathname 훅은 현재 url의 path 값을 문자열로 반환. 이때 쿼리 스트링은 제외한 경로에 대한 부분만을 문자열로 반환.
+
+```javascript
+// "app/blog/hello-world/page.tsx"
+
+"use client";
+
+import { NextPage } from 'next';
+
+const Page: NextPage = () => {
+  const pathname = usePathname(); 
+  // URL -> "blog/hello-world?v=1"
+  // pathname -> '/blog/hello-world'
+
+  return null;
+}
+
+export default Page
+```
+
+### useSearchParams
+
+useSearchParams 훅 호출시 반환하는 객체의 get 메서드를 호출할 때 인수로 쿼리 키 값 전달. toString 메서드 호출시 현재 쿼리 스트링 전체를 반환.
+
+```javascript
+"use client":
+
+import { Nextpage } from 'next';
+import { useSearchParams } from 'next/navigation';
+
+const Page: NextPage = () => {
+  const searchParams = useSearchParams()
+
+  searchParams.get('my-project'); 
+  // URL -> "/dashboard?search=my-project"
+  // searchParams.get('my-project') -> 'my-project'
+
+  searchParams.toString();
+  // URL -> "/dashboard?search=my-project"
+  // searchParams.toString() -> 'search=my-project'
+
+  return null;
+}
+
+export default Page;
+```
+
+### useParams
+
+useParams 훅 호출시 반환하는 객체는 동적 라우팅에 대한 정보를 객체 형태로 반환.
+
+```javascript
+// "/shop/[tag]/[item]/page.tsx"
+
+"use client";
+
+import { NextPage } from 'next';
+import { useParams } from 'next/navigation';
+
+const Page: NextPage = () => {
+  const pararms = usePararms();
+  // URL -> "/shop/shoes/nike-air-max-97"
+  // pararms -> { tag: 'shoes', tag: 'nike-air-max-97' }
+
+  return null;
+}
+
+export default Page;
+```
+
+### useSelectedLayoutSegment & useSelectedLayoutSegments
+
+useSelectedLayoutSegment와 useSelectedLayoutSegments훅은 현재 활성 상태인 하위 세그먼트 값을 문자열 혹은 배열을 반환. 만약 활성된 세그먼트가 없는 경우 null 반환.
+
+useSelectedLayoutSegment 훅의 경우 활성화된 가장 상위 세그먼트 스트링값을 반환. 만약 활성화된 모든 세그먼트를 반환받고 싶다면 useSelectedLayoutSegments 훅 사용.
+
+```javascript
+// "app/dashboard/layout.tsx"
+
+"use client";
+
+import { FC, ReactNode } from 'react';
+import { useSelectedLayoutSegment, useSelectedLayoutSegments } from 'next/navigation';
+
+interface IProps {
+  children: ReactNode;
+}
+
+const Layout: FC<IProps> = ({ children }) => {
+  const segment = useSelectedLayoutSegment() 
+  // URL -> "/dashboard", segment -> null
+  // URL -> "/dashboard/settings", segment -> 'settings'
+  // URL -> "/dashboard/analytics", segment -> 'analytics'
+  // URL -> "/dashboard/analytics/monthly", segment -> 'analytics'
+
+  const segments0 = useSelectedLayoutSegments() 
+  // URL -> "/dashboard", segments -> null
+  // URL -> "/dashboard/settings", segments -> ['settings']
+  // URL -> "/dashboard/analytics", segments -> ['analytics']
+  // URL -> "/dashboard/analytics/monthly", segments -> ['analytics', 'monthly']
+
+  return <main>{children}</main>
+}
+
+export default Layout;
 ```

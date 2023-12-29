@@ -1,13 +1,14 @@
 'use client';
 
 import { FC } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import CloseIcon from '@/images/icons/Close';
 import styles from '@/app/_components/modal.module.css';
 
 const Modal: FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleClickCloseButton = () => {
     router.back();
@@ -20,7 +21,7 @@ const Modal: FC = () => {
         <button className={styles['close-button']} onClick={handleClickCloseButton}>
           <CloseIcon />
         </button>
-        <strong>This is Parallel Routes Component</strong>
+        <strong>current URL path is "{pathname}"</strong>
       </div>
     </>
   );

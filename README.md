@@ -109,12 +109,14 @@ export default Default;
 #### Intercepting Routes
 
 디렉토리명을 "(...)forder", "(..)forder" 혹은 "(.)forder"로 작성한 경우 상위 route를 intercepting하는 intercepting route로 동작. 즉, 소괄호 안 "."은 route depth를 의미, 여러 번 사용 가능하며 원하는 route를 intercepting 가능.
-
 예를 들어, "/app/dashboard/(..)i/page.tsx"의 경우 "app/i/page.tsx"를 interceipting함, "app/dashboard/(..)(..)i"의 경우 "app/i"를 interceipting.
 
-> Parallel Routes 내부에서도 Intercepting Routes 사용 가능. 주의할 점으로 intercepting 될 때 무시되는 경로들은 동일하게 무시되어 Interceipting 수행. 예를 들어, "/app/dashboard/@modal/(.)i/"의 경우 "/app/dashboard/i"를 intercepting. (.) 자체는 현재 디렉토리를 의미하지만 @modal 자체가 url에 영향을 주지 않으므로 intercepting되는 route 또한 @modal을 무시한 dashboard를 가리킴.
+Parallel Routes 내 Intercepting Routes 사용 가능하며, 주의할 점으로 intercepting 될 때 무시되는 경로들은 동일하게 무시되어 Interceipting 수행. 
+예를 들어, "/app/dashboard/@modal/(.)i/"의 경우 "/app/dashboard/i"를 intercepting. (.) 자체는 현재 디렉토리를 의미하지만 @modal 자체가 url에 영향을 주지 않으므로 intercepting되는 route 또한 @modal을 무시한 dashboard를 가리킴. 페러렐 라우트 뿐만 아니라 url 주소에 영향을 주지 않는 Route Groups, Private Routes 등도 동일하게 무시되어 Intercepting됨.
 
-> 만약 페러렐 라우트 내 인터셉팅 라우트를 사용하는 경우 인터셉팅된 url 경로로 변경 되지만, 실제로 해당 경로의 Page 컴포넌트는 렌더링되지 않으며 기존 페러렐 라우트처럼 직전 페이지에 병렬로 표시됨.
+만약 모달을 Parallel Routes로 사용하는 경우 Intercepting Routes와 함께 사용하여 원하는 url 경로로 모달을 표시할 수 있음. 이로 인해 URL을 통해 모달 내용을 공유할 수 있게 되고, 페이지를 새로 고침할 때 모달을 닫지 않고 컨텍스트를 보존할 수도 있으며, 이전 경로로 이동하는 대신 뒤로 가기로 모달을 닫거나 앞으로 가기로 모달을 다시 열수 있음.
+
+> 만약 페러렐 라우트 내 인터셉팅 라우트를 사용하는 경우 인터셉팅된 url 경로로 변경 되지만, 실제로 해당 경로의 Page 컴포넌트는 렌더링되지 않으며 기존 Page 컴포넌트만 리렌더링되고 Layout 컴포넌트에 페러렐 컴포넌트가 prop으로 전달.
 
 > Intercepting Routes는 클라이언트 사이드에서 라우팅될 때만 Intecepting되며, 클라이언트상에서 라우팅되지 않은 경우 기존 페이지가 렌더링. 예를 들어, "app/dashboard/@modal/(.)i"가 intercepting되지 않는다면 "app/dashboard/i"가 라우팅.
 

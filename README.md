@@ -132,7 +132,7 @@ layout.tsx가 export default한 Layout 컴포넌트는 props로 page.tsx가 expo
 
 layout.tsx는 app 디렉토리 내 각 하위 디렉토리 마다 하나씩 설정 가능. 만약 하위 디렉토리에 layout.tsx가 존재하는 경우 상위 layout.tsx가 하위 layout.tsx를 포함하는 형식으로 적용(nested layout).
 
-예를 들어,"app/dashboard/dashboard/settings/layout.tsx"나 "app/dashboard/dashboard/analytics/layout.tsx"의 경우 "app/dashboard/layout.tsx"를 포함.
+예를 들어,"app/dashboard/settings/layout.tsx"나 "app/dashboard/analytics/layout.tsx"의 경우 "app/dashboard/layout.tsx"를 포함.
 
 client side navigation을 사용하는 경우 layout 컴포넌트는 리렌더링 되지 않음. 만약 리렌더링이 필요한 Layout 컴포넌트가 필요한 경우 layout.tsx 대신 template.tsx 사용.
 
@@ -373,4 +373,49 @@ const Layout: FC<IProps> = ({ children }) => {
 }
 
 export default Layout;
+```
+
+## Environment Variables
+
+Next에서 환경 변수를 사용하기 위해서는 프로젝트 루트 경로에 ".env" 확장자 파일을 생성하여 사용. Next는 자동으로 구동 환경에 대한 값을 process.env.NODE_ENV 환경 변수에 바인딩하고 있으며 개발 환경에서는 "development", 배포 환경에서는 "production", 테스트 환경에서는 "test" 값을 갖고 있음.
+
+환경 변수 파일 내 "NEXT_PUBLIC_"이라는 prefix가 없는 경우 브라우저에서는 접근할 수 없고 서버에서만 접근할 수 있는 환경 변수가 되며, 있는 경우에는 서버와 브라우저 모두가 접근할 수 있는 환경 변수가 됨.
+
+- ".env" 파일은 모든 구동 환경에서 공통적으로 적용할 디폴트 환경 변수를 정의. 가장 우선순위가 낮아 다른 환경 변수 파일 내 동일한 이름의 환경 변수가 있다면 오버라이딩됨.
+
+- ".env.development" 파일은 개발 환경에서 사용되는 환경 변수 파일 (process.env.NODE_NEV === "development").
+
+- ".env.production" 파일은 배포 환경에서 사용되는 환경 변수 파일 (process.env.NODE_NEV === "production").
+
+- ".env.test" 파일은 테스트 환경에서 사용되는 환경 변수 파일 (process.env.NODE_NEV === "test").
+
+- ".env.local" 파일은 가장 우선순위가 높은 환경 변수 파일이며 다른 환경 변수 파일에 작성된 동일한 이름의 환경 변수를 오버라딩함.
+
+```javascript
+// ".env"
+// 가장 우선순위가 낮음. 모든 환경에서 공통으로 사용할 디폴트 키를 관리.
+NEXT_PUBLIC_ANALYTICS_ID=default_analytics_id
+NEXT_PUBLIC_API_KEY=default_api_key
+NODE_VALUE=default_value  
+
+
+// ".env.development"
+// 개발 환경(process.env.NODE_ENV === "development")에서 사용할 키를 등록. 
+// 개발 환경일 경우 ".env"에 같은 환경변수가 있다면 오버라이딩.
+NEXT_PUBLIC_API_KEY=dev_api_key
+NODE_VALUE=dev_value
+
+
+// ".env.production"
+// 배포 & 빌드환경(process.env.NODE_ENV === "production")에서 사용할 키를 등록. 
+// 배포환경일 경우 ".env"에 같은 환경변수가 있다면 오버라이딩.
+NEXT_PUBLIC_API_KEY=prod_api_key
+NODE_VALUE=prod_value
+
+
+// ".env.local"
+// 모든 환경에서 최우선 순위로 적용할 환경 변수를 등록.
+// 모든 ".env.*" 파일보다 우선 순위가 높음 (동일한 환경변수가 있다면 모두 오버라이딩)
+NEXT_PUBLIC_API_KEY=local_api_key
+NODE_VALUE=local_value
 ```

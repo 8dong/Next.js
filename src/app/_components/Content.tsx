@@ -15,6 +15,11 @@ const Content: FC<IProps> = ({ searchParams, params, navigationList }) => {
   const pathname = usePathname();
   const router = useRouter();
 
+  console.log({
+    'process.env.NODE_ENV': process.env.NODE_ENV,
+    'process.env.API_KEY': process.env.API_KEY
+  });
+
   const onClickNavigationButton = (pathname: string) => {
     router.push(pathname);
   };

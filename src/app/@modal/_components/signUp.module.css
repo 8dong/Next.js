@@ -1,0 +1,21 @@
+.sign-up-form {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.input-feild {
+}
+
+.input-label {
+  margin-right: 10px;
+}

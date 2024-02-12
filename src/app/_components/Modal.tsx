@@ -1,12 +1,16 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import CloseIcon from '@/images/icons/Close';
 import styles from '@/app/_components/modal.module.css';
 
-const Modal: FC = () => {
+interface IProps {
+  content?: ReactNode;
+}
+
+const Modal: FC<IProps> = ({ content }) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,6 +26,7 @@ const Modal: FC = () => {
           <CloseIcon />
         </button>
         <strong>current URL path is "{pathname}"</strong>
+        {content && <section>{content}</section>}
       </div>
     </>
   );

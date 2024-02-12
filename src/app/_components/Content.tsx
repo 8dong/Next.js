@@ -20,13 +20,22 @@ const Content: FC<IProps> = ({ searchParams, params, navigationList }) => {
     'process.env.API_KEY': process.env.API_KEY
   });
 
-  const onClickNavigationButton = (pathname: string) => {
+  const handleClickNavLink = (pathname: string) => {
     router.push(pathname);
+  };
+
+  const handleClickBackBtn = () => {
+    router.back();
   };
 
   return (
     <>
       <h1>current URL path is "{pathname}"</h1>
+      {pathname !== '/' && (
+        <button className={styles['back-button']} onClick={handleClickBackBtn}>
+          Back
+        </button>
+      )}
       <dl>
         <div>
           <dt>Search Params</dt>
@@ -49,7 +58,7 @@ const Content: FC<IProps> = ({ searchParams, params, navigationList }) => {
           <button
             className={styles['navigation-button']}
             key={navigation}
-            onClick={() => onClickNavigationButton(navigation)}
+            onClick={() => handleClickNavLink(navigation)}
           >
             {navigation}
           </button>

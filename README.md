@@ -419,3 +419,100 @@ NODE_VALUE=prod_value
 NEXT_PUBLIC_API_KEY=local_api_key
 NODE_VALUE=local_value
 ```
+
+## Server Actions
+
+Server Actions는 Form Mutation(생성, 업데이트, 삭제 등)을 서버 거치지 않고도 컴포넌트 내에서 비동기 함수를 직접 정의하여 조작 가능. 
+
+서버 혹은 클라이언트 컴포넌트 내부에서 모두 사용가능하고 함수 내부 최상단 혹은 파일 최상단에 "use server"라는 지시어를 작성해야하며, 직렬화 가능한 값만 반환 가능. 또한 async 함수로 정의.
+Server Actions는 인수로는 FormData 타입의 값을 전달받기 때문에 useState나 useRef 훅으로 input의 value를 가져오지 않고 formData.get 메서드로 접근 가능.
+
+만약 formData 외 추가적인 인수를 전달하고자 한다면 아래처럼 Function.prototype.bind 메서드를 사용하여 전달.
+
+```javascript
+// app/_actions/user.ts
+
+"use server"
+
+// updateUser.bind(null, userId);
+export const updateUser = async (userId: string, formData: FormData) => {
+  // ,,,
+}
+```
+
+### server components
+
+서버 컴포넌트에서는 컴포넌트 내부에 Server Actions 함수를 작성하고, form 태그의 action 어트리뷰트에 Server Actions 참조를 작성.
+
+```javascript
+// "app/page.tsx"
+
+import { NextPage } from 'next';
+
+const Page: NextPage = () => {
+  // Server Actions
+  const createInvoice = async (formData: FormData) => {
+    'user server';
+
+    const rawFormData = {
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status')
+    };
+
+    // mutate data,,,
+    // revalidate cache,,,
+  };
+
+  return <form action={createInvoice}>{/* ,,, */}</form>;
+};
+
+export default Page;
+```
+
+### client components
+
+server action을 클라이언트 컴포넌트에서 사용 가능하며, form 상태 또한 클라이언트상에 표시할 수 있음. 
+이때 "use server" 지시어는 서버 컴포넌트에서만 작성 가능하기 때문에 server action은 분리된 파일에 작성하고 이를 import하여 사용해야 함.
+
+```javascript
+// "app/_actions/index.ts"
+
+"server action";
+
+export const createInvoice = async (prevState: { message: string }, formData: FormData) => {
+  const rawFormData = {
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status')
+    };
+
+    // mutate data,,,
+    // revalidate cache,,,
+}
+```
+
+```javascript
+// "app/_components/SignupForm.tsx"
+
+"use client";
+
+import { FC } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
+
+import { createInvoice } from '@/_actions';
+
+const SignUpForm: FC = () => {
+  // const [state, formAction] = useFormState(fn, initialState, permalink?);
+  const [state, formAction] = useFormState(createInvoice, { message: '' });
+
+  return <form action={formAction}>{/* ,,, */}</form>;
+};
+
+export default Page;
+```
+
+react-dom이 제공하는 useFormState, useFormStatus 훅을 위와 같이 이용하여 server action을 사용할 수 있음. 
+이때 server action은 서버 코드로 클라이언트에는 접근할 수 없음.
+
+> useFormState 훅은 react-dom이 제공하는 훅으로, 첫 번째 인수로 action 함수, 두 번째 인수로 초기 상태값을 전달하면 반환값으로 배열을 반환하고, 배열의 첫 번째 요소는 form 상태값, 두 번째 요소는 formAction 함수를 반환. 이때 반환값인 formAction 함수를 form 태그의 action 어트리뷰트에 작성.

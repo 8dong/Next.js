@@ -232,7 +232,7 @@ export default NotFound;
 url을 변경하기 위해서는 next/navigation이 제공하는 useRouter 훅 사용. useRouter 훅이 호출시 반환하는 객체에 push, replace, refresh, prefetch, back, forward 메서드 존재 (client side navigation).
 
 ```javascript
-"use client";
+'use client';
 
 import { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
@@ -273,7 +273,7 @@ usePathname 훅은 현재 url의 path 값을 문자열로 반환. 이때 쿼리 
 ```javascript
 // "app/blog/hello-world/page.tsx"
 
-"use client";
+'use client';
 
 import { NextPage } from 'next';
 
@@ -293,7 +293,7 @@ export default Page
 useSearchParams 훅 호출시 반환하는 객체의 get 메서드를 호출할 때 인수로 쿼리 키 값 전달. toString 메서드 호출시 현재 쿼리 스트링 전체를 반환.
 
 ```javascript
-"use client":
+'use client';
 
 import { Nextpage } from 'next';
 import { useSearchParams } from 'next/navigation';
@@ -322,7 +322,7 @@ useParams 훅 호출시 반환하는 객체는 동적 라우팅에 대한 정보
 ```javascript
 // "/shop/[tag]/[item]/page.tsx"
 
-"use client";
+'use client';
 
 import { NextPage } from 'next';
 import { useParams } from 'next/navigation';
@@ -347,7 +347,7 @@ useSelectedLayoutSegment 훅의 경우 활성화된 가장 상위 세그먼트 �
 ```javascript
 // "app/dashboard/layout.tsx"
 
-"use client";
+'use client';
 
 import { FC, ReactNode } from 'react';
 import { useSelectedLayoutSegment, useSelectedLayoutSegments } from 'next/navigation';
@@ -432,7 +432,7 @@ Server Actions는 인수로는 FormData 타입의 값을 전달받기 때문에 
 ```javascript
 // app/_actions/user.ts
 
-"use server"
+'use server';
 
 // updateUser.bind(null, userId);
 export const updateUser = async (userId: string, formData: FormData) => {
@@ -452,7 +452,7 @@ import { NextPage } from 'next';
 const Page: NextPage = () => {
   // Server Actions
   const createInvoice = async (formData: FormData) => {
-    'user server';
+    'use server';
 
     const rawFormData = {
       customerId: formData.get('customerId'),
@@ -478,7 +478,7 @@ server action을 클라이언트 컴포넌트에서 사용 가능하며, form �
 ```javascript
 // "app/_actions/index.ts"
 
-"server action";
+'use server';
 
 export const createInvoice = async (prevState: { message: string }, formData: FormData) => {
   const rawFormData = {
@@ -495,7 +495,7 @@ export const createInvoice = async (prevState: { message: string }, formData: Fo
 ```javascript
 // "app/_components/SignupForm.tsx"
 
-"use client";
+'use client';
 
 import { FC } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
